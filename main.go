@@ -153,6 +153,10 @@ func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload i
 }
 
 
+func handleConn(conn net.Conn) {
+	defer conn.Close()
+}
+
 func main(){
 
 	err := godotenv.Load()
@@ -174,6 +178,14 @@ func main(){
 		log.Fatal(err)
 	}
 	defer server.Close()
+	
+	for {
+		conn, err := server.Accept()
+		if err != nil {
+			log.Fatal(err)
+		}
+		go handleConn(conn)
+	}
 
 	// USED BEFORE NETWORKING TUTORIAL
 	// go func() {
